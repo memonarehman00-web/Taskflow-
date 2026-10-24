@@ -1,0 +1,6 @@
+{
+  "name": "Sindhi Rishta Pakistan",
+  "description": "Pakistan ka sab se behtreen Sindhi shadi rishta app - Apna jeevan sathi dhoondo",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

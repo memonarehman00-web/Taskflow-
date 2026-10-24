@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidProfile(data) {
+      return data.userId is string &&
+             data.name is string && data.name.size() > 0 &&
+             data.age is number && data.age >= 18 &&
+             data.gender is string && (data.gender == 'مرد' || data.gender == 'عورت') &&
+             data.city is string && data.city.size() > 0 &&
+             data.caste is string && data.caste.size() > 0 &&
+             data.education is string && data.education.size() > 0 &&
+             data.height is string && data.height.size() > 0 &&
+             data.marital is string && data.marital.size() > 0 &&
+             (!('photo' in data) || data.photo is string) &&
+             (!('photoBlurred' in data) || data.photoBlurred is bool) &&
+             (!('createdAt' in data) || (data.createdAt is timestamp && data.createdAt <= request.time)) &&
+             (!('updatedAt' in data) || (data.updatedAt is timestamp && data.updatedAt <= request.time));
+    }
+
+    match /profiles/{profileId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(request.resource.data.userId) && isValidProfile(request.resource.data);
+      allow update: if isOwner(resource.data.userId) &&
+                       request.resource.data.userId == resource.data.userId &&
+                       isValidProfile(request.resource.data);
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}

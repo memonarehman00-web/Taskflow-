@@ -1,0 +1,88 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "User matrimonial profile in Sindhi Rishta",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Document ID"
+        },
+        "userId": {
+          "type": "string",
+          "description": "User ID of creator"
+        },
+        "name": {
+          "type": "string",
+          "description": "نالو (Full Name)"
+        },
+        "age": {
+          "type": "number",
+          "description": "عمر (Age in years, >= 18)"
+        },
+        "gender": {
+          "type": "string",
+          "description": "جنس (Gender: مرد or عورت)"
+        },
+        "city": {
+          "type": "string",
+          "description": "شهر (City)"
+        },
+        "caste": {
+          "type": "string",
+          "description": "ذات (Caste/Community)"
+        },
+        "education": {
+          "type": "string",
+          "description": "تعليم (Education)"
+        },
+        "height": {
+          "type": "string",
+          "description": "قد (Height)"
+        },
+        "marital": {
+          "type": "string",
+          "description": "ازدواجي حيثيت (Marital status)"
+        },
+        "photo": {
+          "type": "string",
+          "description": "Profile photo URL"
+        },
+        "photoBlurred": {
+          "type": "boolean",
+          "description": "Photo privacy blur toggle"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp via serverTimestamp"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Update timestamp via serverTimestamp"
+        }
+      },
+      "required": [
+        "userId",
+        "name",
+        "age",
+        "gender",
+        "city",
+        "caste",
+        "education",
+        "height",
+        "marital"
+      ]
+    }
+  },
+  "firestore": {
+    "/profiles/{profileId}": {
+      "schema": {
+        "$ref": "#/entities/Profile"
+      },
+      "description": "All published matrimonial profiles"
+    }
+  }
+}

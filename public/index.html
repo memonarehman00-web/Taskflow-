@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<html lang="sd" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-title" content="Sindhi Rishto">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Sindhi Rishto | سنڌي رشتو پاڪستان</title>
+
+  <!-- PWA & Native Meta Tags -->
+  <meta name="application-name" content="Sindhi Rishto">
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="description" content="Pakistan ka sab se behtreen Sindhi shadi rishta app - Apna jeevan sathi dhoondo">
+
+  <!-- Manifest Link -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icon-512.png">
+  <link rel="apple-touch-icon" href="/icon-192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/icon-192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/icon-512.png">
+
+  <!-- JSZip library for export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <style>
+    :root {
+      --primary: #E91E63;
+      --primary-hover: #D81B60;
+      --primary-light: rgba(233, 30, 99, 0.15);
+      --bg: #000000;
+      --surface: #121212;
+      --surface-card: #18181B;
+      --surface-card-hover: #222227;
+      --border: #27272A;
+      --border-light: #3F3F46;
+      --text-main: #FFFFFF;
+      --text-muted: #A1A1AA;
+      --gold: #F59E0B;
+      --success: #10B981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      background: #000;
+    }
+
+    body {
+      padding-top: env(safe-area-inset-top);
+      background: #000;
+      margin: 0;
+      color: var(--text-main);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Naskh Arabic', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* Top App Bar - Sleek Native Look */
+    .top-header {
+      background: #000000;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .header-content {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 10px rgba(233, 30, 99, 0.4);
+      object-fit: cover;
+    }
+
+    .brand-title {
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #FFFFFF;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-premium {
+      background: linear-gradient(135deg, #E91E63 0%, #C2185B 100%);
+      color: #FFFFFF;
+      box-shadow: 0 2px 10px rgba(233, 30, 99, 0.35);
+      border: 1px solid #FF4081;
+    }
+
+    .btn-premium:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(233, 30, 99, 0.5);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: #FFFFFF;
+      border: 1px solid var(--border-light);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface);
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-download {
+      background: #10B981;
+      color: #FFFFFF;
+    }
+
+    .btn-download:hover {
+      background: #059669;
+    }
+
+    /* Main Container */
+    .main-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px;
+      flex: 1;
+      width: 100%;
+    }
+
+    /* Hero Banner */
+    .hero-card {
+      background: linear-gradient(180deg, #18181B 0%, #121212 100%);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #E91E63, #9C27B0, #E91E63);
+    }
+
+    .pwa-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(233, 30, 99, 0.12);
+      color: #FF4081;
+      border: 1px solid rgba(233, 30, 99, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.3;
+    }
+
+    .hero-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+      max-width: 540px;
+      line-height: 1.5;
+    }
+
+    .download-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .tab-btn.active {
+      color: #FFFFFF;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+    }
+
+    /* Search & Filter Bar */
+    .filter-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .filter-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-inputs-grid {
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1.2fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 680px) {
+      .filter-inputs-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .filter-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .filter-input {
+      width: 100%;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .filter-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.2);
+    }
+
+    .filter-input::placeholder {
+      color: #71717A;
+    }
+
+    .filter-select {
+      width: 100%;
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: #FFFFFF;
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .filter-select option {
+      background: #18181B;
+      color: #FFFFFF;
+    }
+
+    .filter-select:focus {
+      border-color: var(--primary);
+    }
+
+    .filter-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .btn-reset-filter {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 12px;
+      font-family: inherit;
+      text-decoration: underline;
+    }
+
+    /* Profiles Grid */
+    .profiles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .profile-card {
+      background: var(--surface-card);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-light);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #222227 0%, #1A1A1E 100%);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .avatar-placeholder {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #E91E63 0%, #AD1457 100%);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+
+    .card-caste {
+      font-size: 12px;
+      color: #FF4081;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .card-body {
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 13px;
+      flex: 1;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      padding: 2px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-val {
+      color: #FFFFFF;
+      font-weight: 500;
+    }
+
+    .card-footer {
+      padding: 12px 16px;
+      border-top: 1px solid var(--border);
+      background: #141417;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badge-verified {
+      color: #10B981;
+      font-weight: 600;
+      font-size: 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Create Profile Form */
+    .form-card {
+      background: var(--surface);
+      border-radius: 14px;
+      padding: 20px;
+      border: 1px solid var(--border);
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #E4E4E7;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-card);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-family: inherit;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    /* Premium Modal Window */
+    .premium-modal {
+      background: #121212;
+      border: 1px solid #27272A;
+      border-radius: 18px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 30px rgba(233, 30, 99, 0.2);
+      overflow: hidden;
+      animation: modalSlideUp 0.25s ease-out;
+      position: relative;
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, #1C1917 0%, #121212 100%);
+      padding: 18px 20px;
+      border-bottom: 1px solid #27272A;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .modal-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #E91E63, #FF4081);
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-close {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #A1A1AA;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: rgba(233, 30, 99, 0.2);
+      color: #FFFFFF;
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .easypaisa-box {
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .easypaisa-badge {
+      align-self: center;
+      background: #00875A;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+    }
+
+    .easypaisa-instructions {
+      font-size: 14px;
+      color: #E4E4E7;
+      font-weight: 600;
+    }
+
+    .easypaisa-number-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #0D0D10;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px dashed #E91E63;
+      margin: 4px 0;
+    }
+
+    .easypaisa-number {
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 2px;
+      font-family: monospace;
+      direction: ltr;
+    }
+
+    .btn-copy {
+      background: #27272A;
+      color: #FFFFFF;
+      border: 1px solid #3F3F46;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-copy:hover {
+      background: #3F3F46;
+    }
+
+    .btn-copy.copied {
+      background: #10B981;
+      border-color: #10B981;
+    }
+
+    .btn-easypaisa-app {
+      background: #00875A;
+      color: #FFFFFF;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: background 0.2s;
+      font-family: inherit;
+    }
+
+    .btn-easypaisa-app:hover {
+      background: #006644;
+    }
+
+    .tid-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .tid-label {
+      font-size: 13px;
+      color: #E4E4E7;
+      font-weight: 600;
+    }
+
+    .tid-input {
+      background: #18181B;
+      border: 1px solid #27272A;
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #FFFFFF;
+      font-size: 14px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .tid-input:focus {
+      border-color: #E91E63;
+      box-shadow: 0 0 0 2px rgba(233, 30, 99, 0.25);
+    }
+
+    .tid-input::placeholder {
+      color: #71717A;
+    }
+
+    .btn-verify-tid {
+      background: #E91E63;
+      color: #FFFFFF;
+      border: none;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s, transform 0.1s;
+      font-family: inherit;
+      box-shadow: 0 4px 14px rgba(233, 30, 99, 0.4);
+    }
+
+    .btn-verify-tid:hover {
+      background: #D81B60;
+      transform: translateY(-1px);
+    }
+
+    .btn-verify-tid:active {
+      transform: translateY(0);
+    }
+
+    .whatsapp-badge {
+      font-size: 11px;
+      color: #A1A1AA;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    /* Footer */
+    footer {
+      background: #000000;
+      border-top: 1px solid var(--border);
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    /* Empty state */
+    .empty-state {
+      grid-column: 1 / -1;
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top App Bar -->
+  <header class="top-header">
+    <div class="header-content">
+      <a href="/" class="brand-wrap">
+        <img src="/icon-192.png" alt="Sindhi Rishto" class="brand-logo" onerror="this.style.display='none'" />
+        <div>
+          <div class="brand-title">سنڌي رشتو پاڪستان</div>
+          <div class="brand-sub">SINDHI RISHTO NATIVE PWA</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button id="exportZipBtn" class="btn btn-outline" onclick="exportProjectAsZip()" title="Export Project as ZIP">
+          📦 Export Project as ZIP
+        </button>
+        <button class="btn btn-premium" onclick="openPremiumModal()" title="Premium Membership">
+          👑 Premium
+        </button>
+        <button id="installBtn" class="btn btn-outline" style="display:none;" onclick="installPWA()">
+          📱 Install
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Hero Card -->
+    <section class="hero-card">
+      <div class="pwa-badge">✓ Fullscreen Native App Active • PWA Ready</div>
+      <h1 class="hero-title">سنڌي رشتو - پنهنجو جيون ساٿي ڳوليو</h1>
+      <p class="hero-desc">
+        پاڪستان جو سڀ کان معتبر سنڌي شادي رشتو پليٽ فارم. پنهنجي شهر ۽ ذات مطابق بهترين رشتا ڳوليو.
+      </p>
+
+      <!-- Download Links -->
+      <div class="download-group">
+        <button class="btn btn-premium" onclick="openPremiumModal()">
+          👑 Go Premium (Rs 1500)
+        </button>
+        <button onclick="downloadFileReliably('/sindhi-rishto-netlify-deploy.zip', 'sindhi-rishto-netlify-deploy.zip')" class="btn btn-primary" id="netlifyZipDownloadBtn" style="background: linear-gradient(135deg, #00C7B7, #008f84); border: none; font-weight: bold; cursor: pointer;">
+          🚀 Download Netlify ZIP
+        </button>
+        <a href="/sindhi-rishto-project.zip" download="sindhi-rishto-project.zip" class="btn btn-primary" id="zipDownloadBtn">
+          📦 Download Project ZIP
+        </a>
+        <a href="/SindhiRishtaPakistan.apk" download="SindhiRishtaPakistan.apk" class="btn btn-download" id="apkDownloadBtn">
+          ⬇️ Download APK (30MB)
+        </a>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabProfilesBtn" onclick="switchTab('profiles')">
+        رشتن جي لسٽ (Profiles)
+      </button>
+      <button class="tab-btn" id="tabCreateBtn" onclick="switchTab('create')">
+        پنهنجو پروفائل ٺاهيو (Create Profile)
+      </button>
+    </div>
+
+    <!-- Profiles Tab Container -->
+    <div id="profilesTabWrapper">
+      <!-- Search & Filter Bar -->
+      <section class="filter-card" aria-label="Search and Filter">
+        <div class="filter-title">
+          <span>🔍 رشتو ڳوليو ۽ فلٽر ڪريو (Search &amp; Filter)</span>
+          <button class="btn-reset-filter" onclick="resetFilters()">سڀ ريسيٽ ڪريو (Reset)</button>
+        </div>
+
+        <div class="filter-inputs-grid">
+          <!-- Text Search -->
+          <div class="filter-input-wrap">
+            <input type="text" id="searchInput" class="filter-input" placeholder="نالو، ڪم يا تفصيل سان ڳوليو..." oninput="applyFilters()" />
+          </div>
+
+          <!-- Caste Filter -->
+          <div>
+            <select id="casteFilter" class="filter-select" onchange="applyFilters()">
+              <option value="">سڀ ذاتيون (All Castes)</option>
+              <option value="سومرو">سومرو (Soomro)</option>
+              <option value="ڪلهوڙو">ڪلهوڙو (Kalhoro)</option>
+              <option value="ميمڻ">ميمڻ (Memon)</option>
+              <option value="ٽالپر">ٽالپر (Talpur)</option>
+              <option value="ڀٽو">ڀٽو (Bhutto)</option>
+              <option value="چانڊيو">چانڊيو (Chandio)</option>
+              <option value="عباسي">عباسي (Abbasi)</option>
+              <option value="قاضي">قاضي (Qazi)</option>
+              <option value="جوڻيجو">جوڻيجو (Junejo)</option>
+              <option value="مھيسر">مھيسر (Mahesar)</option>
+              <option value="چنا">چنا (Channa)</option>
+            </select>
+          </div>
+
+          <!-- City Filter -->
+          <div>
+            <select id="cityFilter" class="filter-select" onchange="applyFilters()">
+              <option value="">سڀ شهر (All Cities)</option>
+              <option value="ڪراچي">ڪراچي (Karachi)</option>
+              <option value="حيدرآباد">حيدرآباد (Hyderabad)</option>
+              <option value="سکر">سکر (Sukkur)</option>
+              <option value="لاڙڪاڻو">لاڙڪاڻو (Larkana)</option>
+              <option value="ميرپورخاص">ميرپورخاص (Mirpurkhas)</option>
+              <option value="نوابشاھ">نوابشاھ (Nawabshah)</option>
+              <option value="بدين">بدين (Badin)</option>
+              <option value="خيرپور">خيرپور (Khairpur)</option>
+              <option value="شڪارپور">شڪارپور (Shikarpur)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="filter-meta">
+          <span id="filterCountText">موجوده رشتا ڏيکاري رهيا آهن: 6</span>
+          <span style="color:#FF4081; cursor:pointer;" onclick="openPremiumModal()">👑 پريميئم رشتن تائين رسائي حاصل ڪريو</span>
+        </div>
+      </section>
+
+      <!-- Profiles Grid -->
+      <section id="profilesGrid" class="profiles-grid">
+        <!-- Profile 1 -->
+        <div class="profile-card" data-name="عائشـه سومرو ayesha soomro" data-caste="سومرو soomro" data-city="حيدرآباد hyderabad" data-job="software engineer">
+          <div class="card-header">
+            <div class="avatar-placeholder">ع</div>
+            <div>
+              <div class="card-title">عائشـه سومرو</div>
+              <div class="card-caste">سومرو • Soomro</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-row"><span>عمر:</span><span class="detail-val">24 سال</span></div>
+            <div class="detail-row"><span>شھر:</span><span class="detail-val">حيدرآباد (Hyderabad)</span></div>
+            <div class="detail-row"><span>تعليم:</span><span class="detail-val">M.Sc Computer Science</span></div>
+            <div class="detail-row"><span>ڪم:</span><span class="detail-val">Software Engineer</span></div>
+          </div>
+          <div class="card-footer">
+            <span class="badge-verified">✓ تصديق ٿيل (Verified)</span>
+            <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+          </div>
+        </div>
+
+        <!-- Profile 2 -->
+        <div class="profile-card" data-name="بلاول ڀٽو ڪلھوڙو bilawal kalhoro" data-caste="ڪلهوڙو kalhoro" data-city="ڪراچي karachi" data-job="banking officer mba finance">
+          <div class="card-header">
+            <div class="avatar-placeholder" style="background: linear-gradient(135deg, #1A237E 0%, #0D47A1 100%);">ب</div>
+            <div>
+              <div class="card-title">بلاول ڪلھوڙو</div>
+              <div class="card-caste">ڪلهوڙو • Kalhoro</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-row"><span>عمر:</span><span class="detail-val">28 سال</span></div>
+            <div class="detail-row"><span>شھر:</span><span class="detail-val">ڪراچي (Karachi)</span></div>
+            <div class="detail-row"><span>تعليم:</span><span class="detail-val">MBA Finance (IBA)</span></div>
+            <div class="detail-row"><span>ڪم:</span><span class="detail-val">Banking Officer</span></div>
+          </div>
+          <div class="card-footer">
+            <span class="badge-verified">✓ تصديق ٿيل (Verified)</span>
+            <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+          </div>
+        </div>
+
+        <!-- Profile 3 -->
+        <div class="profile-card" data-name="زينب ميمڻ zainab memon" data-caste="ميمڻ memon" data-city="سکر sukkur" data-job="medical officer mbbs doctor">
+          <div class="card-header">
+            <div class="avatar-placeholder" style="background: linear-gradient(135deg, #C2185B 0%, #880E4F 100%);">ز</div>
+            <div>
+              <div class="card-title">زينب ميمڻ</div>
+              <div class="card-caste">ميمڻ • Memon</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-row"><span>عمر:</span><span class="detail-val">26 سال</span></div>
+            <div class="detail-row"><span>شھر:</span><span class="detail-val">سکر (Sukkur)</span></div>
+            <div class="detail-row"><span>تعليم:</span><span class="detail-val">MBBS Doctor</span></div>
+            <div class="detail-row"><span>ڪم:</span><span class="detail-val">Medical Officer</span></div>
+          </div>
+          <div class="card-footer">
+            <span class="badge-verified">✓ تصديق ٿيل (Verified)</span>
+            <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+          </div>
+        </div>
+
+        <!-- Profile 4 -->
+        <div class="profile-card" data-name="طارق علي ٽالپر tariq talpur" data-caste="ٽالپر talpur" data-city="لاڙڪاڻو larkana" data-job="govt engineer civil">
+          <div class="card-header">
+            <div class="avatar-placeholder" style="background: linear-gradient(135deg, #0F766E 0%, #115E59 100%);">ط</div>
+            <div>
+              <div class="card-title">طارق علي ٽالپر</div>
+              <div class="card-caste">ٽالپر • Talpur</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-row"><span>عمر:</span><span class="detail-val">30 سال</span></div>
+            <div class="detail-row"><span>شھر:</span><span class="detail-val">لاڙڪاڻو (Larkana)</span></div>
+            <div class="detail-row"><span>تعليم:</span><span class="detail-val">B.E Civil (MUET)</span></div>
+            <div class="detail-row"><span>ڪم:</span><span class="detail-val">Govt. Engineer</span></div>
+          </div>
+          <div class="card-footer">
+            <span class="badge-verified">✓ تصديق ٿيل (Verified)</span>
+            <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+          </div>
+        </div>
+
+        <!-- Profile 5 -->
+        <div class="profile-card" data-name="فاطمه چانڊيو fatima chandio" data-caste="چانڊيو chandio" data-city="ميرپورخاص mirpurkhas" data-job="lecturer english master">
+          <div class="card-header">
+            <div class="avatar-placeholder" style="background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);">ف</div>
+            <div>
+              <div class="card-title">فاطمه چانڊيو</div>
+              <div class="card-caste">چانڊيو • Chandio</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-row"><span>عمر:</span><span class="detail-val">25 سال</span></div>
+            <div class="detail-row"><span>شھر:</span><span class="detail-val">ميرپورخاص (Mirpurkhas)</span></div>
+            <div class="detail-row"><span>تعليم:</span><span class="detail-val">M.A English Literature</span></div>
+            <div class="detail-row"><span>ڪم:</span><span class="detail-val">College Lecturer</span></div>
+          </div>
+          <div class="card-footer">
+            <span class="badge-verified">✓ تصديق ٿيل (Verified)</span>
+            <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+          </div>
+        </div>
+
+        <!-- Profile 6 -->
+        <div class="profile-card" data-name="اسد عباسي asad abbasi" data-caste="عباسي abbasi" data-city="نوابشاھ nawabshah" data-job="pharmacist d pharm">
+          <div class="card-header">
+            <div class="avatar-placeholder" style="background: linear-gradient(135deg, #B45309 0%, #92400E 100%);">ا</div>
+            <div>
+              <div class="card-title">اسد الله عباسي</div>
+              <div class="card-caste">عباسي • Abbasi</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="detail-row"><span>عمر:</span><span class="detail-val">29 سال</span></div>
+            <div class="detail-row"><span>شھر:</span><span class="detail-val">نوابشاھ (Nawabshah)</span></div>
+            <div class="detail-row"><span>تعليم:</span><span class="detail-val">Pharm-D (Doctor of Pharmacy)</span></div>
+            <div class="detail-row"><span>ڪم:</span><span class="detail-val">Senior Pharmacist</span></div>
+          </div>
+          <div class="card-footer">
+            <span class="badge-verified">✓ تصديق ٿيل (Verified)</span>
+            <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Create Profile Tab -->
+    <section id="createTab" class="form-card">
+      <h2 style="color:#FF4081; margin-bottom:16px;">پنهنجو رشتو پروفائل داخل ڪريو</h2>
+      <form onsubmit="handleCreateProfile(event)">
+        <div class="form-group">
+          <label>پورو نالو (Full Name):</label>
+          <input type="text" id="newName" class="form-input" placeholder="مثال: علي رضا سومرو" required>
+        </div>
+        <div class="form-group">
+          <label>ذات / قبيلو (Sindhi Caste):</label>
+          <select id="newCaste" class="form-select" required>
+            <option value="">ذات چونڊيو...</option>
+            <option value="سومرو">سومرو (Soomro)</option>
+            <option value="ڪلهوڙو">ڪلهوڙو (Kalhoro)</option>
+            <option value="ميمڻ">ميمڻ (Memon)</option>
+            <option value="ٽالپر">ٽالپر (Talpur)</option>
+            <option value="ڀٽو">ڀٽو (Bhutto)</option>
+            <option value="چانڊيو">چانڊيو (Chandio)</option>
+            <option value="عباسي">عباسي (Abbasi)</option>
+            <option value="قاضي">قاضي (Qazi)</option>
+            <option value="ٻيو">ٻيو (Other)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>شھر (City):</label>
+          <select id="newCity" class="form-select" required>
+            <option value="">شھر چونڊيو...</option>
+            <option value="ڪراچي">ڪراچي (Karachi)</option>
+            <option value="حيدرآباد">حيدرآباد (Hyderabad)</option>
+            <option value="سکر">سکر (Sukkur)</option>
+            <option value="لاڙڪاڻو">لاڙڪاڻو (Larkana)</option>
+            <option value="ميرپورخاص">ميرپورخاص (Mirpurkhas)</option>
+            <option value="نوابشاھ">نوابشاھ (Nawabshah)</option>
+            <option value="بدين">بدين (Badin)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>تعليم ۽ پيشو (Education &amp; Occupation):</label>
+          <input type="text" id="newJob" class="form-input" placeholder="مثال: M.Com / Accountant" required>
+        </div>
+        <div class="form-group">
+          <label>عمر (Age):</label>
+          <input type="number" id="newAge" class="form-input" placeholder="25" min="18" max="70" required>
+        </div>
+        <div class="form-group">
+          <label>تفصيل / بايو (Bio):</label>
+          <textarea class="form-textarea" rows="3" placeholder="پنهنجي باري ۾ ڪجھ لکو..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-premium" style="width:100%; justify-content:center; padding:12px; font-size:15px;">
+          پروفائل محفوظ ڪريو (Save Profile)
+        </button>
+      </form>
+    </section>
+
+  </main>
+
+  <!-- EasyPaisa Premium Paywall Modal -->
+  <div id="premiumModal" class="modal-backdrop" onclick="handleBackdropClick(event)">
+    <div class="premium-modal">
+      <div class="modal-header">
+        <div class="modal-title">
+          <span>👑</span>
+          <span>Premium Membership - Rs 1500</span>
+        </div>
+        <button class="modal-close" onclick="closePremiumModal()" aria-label="Close modal">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- EasyPaisa Box -->
+        <div class="easypaisa-box">
+          <span class="easypaisa-badge">EASYPAISA PAYMENT</span>
+          <p class="easypaisa-instructions">EasyPaisa par payment karein</p>
+
+          <div style="font-size:12px; color:#A1A1AA;">
+            My EasyPaisa Number:
+          </div>
+
+          <div class="easypaisa-number-row">
+            <span id="easypaisaNumber" class="easypaisa-number">03090063533</span>
+            <button id="copyNumberBtn" class="btn-copy" onclick="copyEasyPaisaNumber()">
+              📋 Copy Number
+            </button>
+          </div>
+
+          <a href="easypaisa://" class="btn-easypaisa-app" onclick="handleEasyPaisaDeepLink(event)">
+            📲 Pay with EasyPaisa App
+          </a>
+        </div>
+
+        <!-- TID Section -->
+        <div class="tid-section">
+          <label class="tid-label" for="transactionIdInput">Transaction ID likhein:</label>
+          <input 
+            type="text" 
+            id="transactionIdInput" 
+            class="tid-input" 
+            placeholder="مثال: TID 1029384756..." 
+            dir="ltr"
+          />
+          <button class="btn-verify-tid" onclick="verifyPaymentWithWhatsApp()">
+            <span>💬 Payment Verify Karwayen</span>
+          </button>
+          <div class="whatsapp-badge">
+            ✓ Opens WhatsApp to confirm TID verification with Admin
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Sindhi Rishto Pakistan (سنڌي رشتو). سڀ حق محفوظ آهن.</p>
+    <p style="margin-top:6px; font-size:12px; color:#71717A;">
+      Native Fullscreen PWA • Netlify Ready • EasyPaisa Instant Activation
+    </p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // Tab switching
+    function switchTab(tab) {
+      const pTabWrapper = document.getElementById('profilesTabWrapper');
+      const cTab = document.getElementById('createTab');
+      const tabProfilesBtn = document.getElementById('tabProfilesBtn');
+      const tabCreateBtn = document.getElementById('tabCreateBtn');
+
+      if (tab === 'profiles') {
+        pTabWrapper.style.display = 'block';
+        cTab.style.display = 'none';
+        tabProfilesBtn.classList.add('active');
+        tabCreateBtn.classList.remove('active');
+      } else {
+        pTabWrapper.style.display = 'none';
+        cTab.style.display = 'block';
+        tabProfilesBtn.classList.remove('active');
+        tabCreateBtn.classList.add('active');
+      }
+    }
+
+    // Filter Logic
+    function applyFilters() {
+      const searchVal = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+      const casteVal = (document.getElementById('casteFilter').value || '').trim().toLowerCase();
+      const cityVal = (document.getElementById('cityFilter').value || '').trim().toLowerCase();
+
+      const cards = document.querySelectorAll('.profile-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name') || '';
+        const caste = card.getAttribute('data-caste') || '';
+        const city = card.getAttribute('data-city') || '';
+        const job = card.getAttribute('data-job') || '';
+
+        const fullText = (name + ' ' + caste + ' ' + city + ' ' + job).toLowerCase();
+
+        const matchesSearch = !searchVal || fullText.includes(searchVal);
+        const matchesCaste = !casteVal || caste.includes(casteVal);
+        const matchesCity = !cityVal || city.includes(cityVal);
+
+        if (matchesSearch && matchesCaste && matchesCity) {
+          card.style.display = 'flex';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Update count & empty state
+      const countEl = document.getElementById('filterCountText');
+      if (countEl) {
+        countEl.textContent = 'موجوده رشتا ڏيکاري رهيا آهن: ' + visibleCount;
+      }
+
+      let emptyEl = document.getElementById('emptyStateMessage');
+      const grid = document.getElementById('profilesGrid');
+      if (visibleCount === 0) {
+        if (!emptyEl) {
+          emptyEl = document.createElement('div');
+          emptyEl.id = 'emptyStateMessage';
+          emptyEl.className = 'empty-state';
+          emptyEl.innerHTML = '<p style="font-size:16px; font-weight:700; color:#fff; margin-bottom:6px;">ڪوبه رشتو نه مليو (No Profiles Found)</p><p style="font-size:13px;">مهرباني ڪري فلٽر تبديل ڪريو يا ريسيٽ بٽڻ دٻايو.</p>';
+          grid.appendChild(emptyEl);
+        }
+        emptyEl.style.display = 'block';
+      } else if (emptyEl) {
+        emptyEl.style.display = 'none';
+      }
+    }
+
+    function resetFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('casteFilter').value = '';
+      document.getElementById('cityFilter').value = '';
+      applyFilters();
+    }
+
+    // Create Profile form handling
+    function handleCreateProfile(e) {
+      e.preventDefault();
+      const name = document.getElementById('newName').value;
+      const caste = document.getElementById('newCaste').value;
+      const city = document.getElementById('newCity').value;
+      const job = document.getElementById('newJob').value;
+      const age = document.getElementById('newAge').value;
+
+      const grid = document.getElementById('profilesGrid');
+      const newCard = document.createElement('div');
+      newCard.className = 'profile-card';
+      newCard.setAttribute('data-name', name.toLowerCase());
+      newCard.setAttribute('data-caste', caste.toLowerCase());
+      newCard.setAttribute('data-city', city.toLowerCase());
+      newCard.setAttribute('data-job', job.toLowerCase());
+
+      const firstChar = name.trim().charAt(0) || 'ر';
+
+      newCard.innerHTML = `
+        <div class="card-header">
+          <div class="avatar-placeholder" style="background: linear-gradient(135deg, #E91E63 0%, #9C27B0 100%);">${firstChar}</div>
+          <div>
+            <div class="card-title">${name}</div>
+            <div class="card-caste">${caste}</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="detail-row"><span>عمر:</span><span class="detail-val">${age} سال</span></div>
+          <div class="detail-row"><span>شھر:</span><span class="detail-val">${city}</span></div>
+          <div class="detail-row"><span>ڪم:</span><span class="detail-val">${job}</span></div>
+        </div>
+        <div class="card-footer">
+          <span class="badge-verified">✓ نئون پروفائل (New)</span>
+          <button class="btn btn-premium" style="padding:6px 12px; font-size:12px;" onclick="openPremiumModal()">رابطو ڪريو (Contact)</button>
+        </div>
+      `;
+
+      grid.prepend(newCard);
+      alert('توهان جو پروفائل ڪاميابي سان شامل ڪيو ويو آهي!');
+      e.target.reset();
+      switchTab('profiles');
+      applyFilters();
+    }
+
+    // Premium Modal Controls
+    function openPremiumModal() {
+      const modal = document.getElementById('premiumModal');
+      if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    function closePremiumModal() {
+      const modal = document.getElementById('premiumModal');
+      if (modal) {
+        modal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target.id === 'premiumModal') {
+        closePremiumModal();
+      }
+    }
+
+    // Copy EasyPaisa Number
+    function copyEasyPaisaNumber() {
+      const numberText = document.getElementById('easypaisaNumber').innerText.trim();
+      navigator.clipboard.writeText(numberText).then(() => {
+        const btn = document.getElementById('copyNumberBtn');
+        const orig = btn.innerText;
+        btn.innerText = '✓ Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.innerText = orig;
+          btn.classList.remove('copied');
+        }, 2500);
+      }).catch(() => {
+        alert('نمبر: ' + numberText);
+      });
+    }
+
+    // Deep link to EasyPaisa App or fallback
+    function handleEasyPaisaDeepLink(e) {
+      // Let href="easypaisa://" attempt opening. If not installed, fallback gracefully.
+      setTimeout(() => {
+        console.log('EasyPaisa app opened or user remained on page.');
+      }, 1000);
+    }
+
+    // Verify Payment via WhatsApp with TID
+    function verifyPaymentWithWhatsApp() {
+      const tidInput = document.getElementById('transactionIdInput');
+      const tid = (tidInput.value || '').trim();
+
+      if (!tid) {
+        alert('مهرباني ڪري پنهنجي EasyPaisa جي Transaction ID (TID) داخل ڪريو.');
+        tidInput.focus();
+        return;
+      }
+
+      const message = "Assalam-o-Alaikum, maine EasyPaisa payment ki hai, TID: " + tid + ", Number: 03090063533, Premium 1500 ke liye.";
+      const waUrl = "https://wa.me/923003620393?text=" + encodeURIComponent(message);
+      window.open(waUrl, '_blank');
+    }
+
+    // Service Worker Registration for PWA
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('PWA ServiceWorker registered:', reg.scope))
+          .catch(err => console.log('ServiceWorker registration error:', err));
+      });
+    }
+
+    // PWA Install Prompt
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('installBtn');
+      if (installBtn) installBtn.style.display = 'inline-flex';
+    });
+
+    function installPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted PWA install');
+        }
+        deferredPrompt = null;
+        const installBtn = document.getElementById('installBtn');
+        if (installBtn) installBtn.style.display = 'none';
+      });
+    function downloadFileReliably(url, filename) {
+      fetch(url)
+        .then(response => {
+          if (!response.ok) throw new Error('Network error');
+          return response.blob();
+        })
+        .then(blob => {
+          const blobUrl = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = blobUrl;
+          link.download = filename;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          setTimeout(() => window.URL.revokeObjectURL(blobUrl), 2000);
+        })
+        .catch(() => {
+          window.location.href = url;
+        });
+    }
+
+    // Export Project as ZIP using JSZip
+    async function exportProjectAsZip() {
+      const btn = document.getElementById('exportZipBtn');
+      const originalText = btn ? btn.innerHTML : '📦 Export Project as ZIP';
+      if (btn) {
+        btn.innerHTML = '⏳ Zipping...';
+        btn.disabled = true;
+      }
+
+      try {
+        if (typeof JSZip === 'undefined') {
+          throw new Error('JSZip not loaded');
+        }
+
+        const zip = new JSZip();
+
+        // Project files currently in project
+        const fileList = [
+          { path: 'index.html', url: '/index.html', binary: false },
+          { path: 'manifest.json', url: '/manifest.json', binary: false },
+          { path: 'sw.js', url: '/sw.js', binary: false },
+          { path: 'netlify.toml', url: '/netlify.toml', binary: false },
+          { path: '_redirects', url: '/_redirects', binary: false },
+          { path: 'icon-192.png', url: '/icon-192.png', binary: true },
+          { path: 'icon-512.png', url: '/icon-512.png', binary: true }
+        ];
+
+        // Fetch and add each project file
+        await Promise.all(fileList.map(async (item) => {
+          try {
+            const res = await fetch(item.url);
+            if (res.ok) {
+              if (item.binary) {
+                const buffer = await res.arrayBuffer();
+                zip.file(item.path, buffer);
+              } else {
+                const text = await res.text();
+                zip.file(item.path, text);
+              }
+            }
+          } catch (e) {
+            console.warn('Could not fetch ' + item.path, e);
+          }
+        }));
+
+        // Generate the ZIP
+        const content = await zip.generateAsync({
+          type: 'blob',
+          compression: 'DEFLATE',
+          compressionOptions: { level: 6 }
+        });
+
+        // Trigger immediate download with requested filename
+        const zipName = 'Taskflow-Project-Export.zip';
+        const blobUrl = window.URL.createObjectURL(content);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = zipName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => window.URL.revokeObjectURL(blobUrl), 3000);
+
+        if (btn) {
+          btn.innerHTML = '✅ Downloaded!';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }, 2000);
+        }
+      } catch (err) {
+        console.warn('JSZip generation failed, falling back to pre-built zip:', err);
+        downloadFileReliably('/Taskflow-Project-Export.zip', 'Taskflow-Project-Export.zip');
+        if (btn) {
+          btn.innerHTML = '✅ Downloaded!';
+          setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+          }, 2000);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
